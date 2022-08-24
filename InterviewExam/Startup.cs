@@ -24,7 +24,7 @@ namespace InterviewExam
         {
 
             services.AddControllersWithViews();
-
+            services.AddSwaggerGen();
             services.AddSingleton<ICosmosDbService>(InitializeCosmosClientInstanceAsync(Configuration.GetSection("CosmosDb")).GetAwaiter().GetResult());
 
             // In production, the React files will be served from this directory
@@ -54,7 +54,14 @@ namespace InterviewExam
 
             app.UseRouting();
 
-            app.UseEndpoints(endpoints =>{});
+            app.UseEndpoints(endpoints =>{
+                endpoints.MapControllerRoute(
+                       name: "default",
+                       pattern: "{controller}/{action=Index}/{id?}");
+            });
+
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             app.UseSpa(spa =>
             {
@@ -62,7 +69,7 @@ namespace InterviewExam
 
                 if (env.IsDevelopment())
                 {
-                    spa.UseProxyToSpaDevelopmentServer("http://localhost:3001");
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
                 }
             });
         }
@@ -80,12 +87,21 @@ namespace InterviewExam
             CosmosClient client = new CosmosClient(account, key);
             CosmosDbService cosmosDbService = new CosmosDbService(client, databaseName, containerName);
             DatabaseResponse database = await client.CreateDatabaseIfNotExistsAsync(databaseName);
-            await database.Database.CreateContainerIfNotExistsAsync(containerName, "/id");
+            ContainerResponse container = await database.Database.CreateContainerIfNotExistsAsync(containerName, "/id");
 
-            //TODO
-            //Add new Item object in the CosmosDB containter
-            // - Id = "Stellium"
-            // - Description = Content property of CosmosDB section in appsettings
+            try
+            {
+                await container.Container.CreateItemAsync(new Item()
+                {
+                    Description = configurationSection.GetSection("Content").Value,
+                    Id = "Stellium"
+                });
+            }
+            catch
+            {
+                //Log error
+            }
+            
 
             return cosmosDbService;
         }

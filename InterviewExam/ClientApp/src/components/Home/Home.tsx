@@ -8,7 +8,7 @@ const Home: React.FC = () => {
 
   const GetData = async () => {
     const stuff = await APIService.GetStuff();
-    setState(decodeURIComponent(escape(window.atob(stuff.content))));
+    setState(decodeURIComponent(escape(window.atob(stuff.description))));
   };
 
   return (
