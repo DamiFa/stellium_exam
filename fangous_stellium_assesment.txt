@@ -1,0 +1,25 @@
+Version de node -> 14, node-sass ne compile pas sinon
+
+Il manque axios dans le front -> utilisé pour le service, rajouté dans le package json avec npm install axios
+
+Ajout de Account et Key dans le fichier de config pour la connexion à CosmoDB
+-> Verification avec le data explorer, le container est bien présent
+
+Problème de proxy entre le back et le front
+->2 approches
+	- Utiliser le react development server pour servir la client app par le IIS
+	- Lancer en parralèle la client App et changer le port d'écoute du proxy
+=> J'ai choisi la 2ème option car elle me permet de faire des modifs sur le front sans avoir besoin de relancer le back et inversement
+
+Quand je clique sur le bouton launch, la requête echoue et le message d'erreur retourne "Cannot Post"
+-> En regardant le APIService sur le front, la requête utilise la methode post au lieu de get
+La requête ne fonctionne toujours pas et retourne une page html, je rajoute un breakpoint dans mon controller pour vérifier
+
+Ajout de l'item dans la database. Si l'item existe deja l'opération nous retourne une exception, j'ai mis cette opération dans un bloc try / catch pour capturer l'erreur et la traité.
+
+On a une erreur sur le front quand on essaie de lire la propriété "content" de la reponse
+-> Elle n'existe pas, j'ai rennomé dans le model Item le content en description pour suivre la nomenclature du back
+
+Ajout de css pour que l'application colle plus à ce qui est attendu
+
+Retirer les utilisations de package inutiles
